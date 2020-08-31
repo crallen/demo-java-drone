@@ -1,0 +1,26 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: build
+    image: gradle:6.5.1-jdk11
+    commands:
+      - gradle --build-cache assemble
+
+  - name: test
+    image: gradle:6.5.1-jdk11
+    commands:
+      - gradle check
+
+  - name: publish
+    image: plugins/ecr
+    settings:
+      access_key:
+        from_secret: aws_access_key_id
+      secret_key:
+        from_secret: aws_secret_access_key
+      registry:
+        from_secret: aws_ecr_registry
+      repo: demo-java-drone
